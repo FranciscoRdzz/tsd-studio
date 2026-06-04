@@ -111,15 +111,15 @@ if (typeof firebase !== "undefined" && firebase.initializeApp) {
 // Cache en memoria para respuesta instantánea
 let cachedData = null;
 
-// Lee datos desde Firestore (timeout 2s)
+// Lee datos desde Firestore (timeout 5s)
 async function getFirestoreData() {
   if (!DOC_REF) return null;
   try {
-    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 2000));
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Firestore no responde en 5s")), 5000));
     const doc = await Promise.race([DOC_REF.get(), timeout]);
     if (doc.exists) return doc.data().data;
   } catch (e) {
-    console.error("Firestore read error:", e);
+    console.error("Firestore read error — revisá que Firestore Database esté habilitado en Firebase Console:", e.message);
   }
   return null;
 }
