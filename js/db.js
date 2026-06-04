@@ -90,7 +90,7 @@ const DEFAULT_DATA = {
   ]
 };
 
-// Firebase opcional — solo disponible si se cargaron los SDKs (admin.html)
+// Firebase — solo se inicializa si el SDK está cargado
 let DOC_REF = null;
 if (typeof firebase !== "undefined" && firebase.initializeApp) {
   try {
@@ -109,109 +109,125 @@ if (typeof firebase !== "undefined" && firebase.initializeApp) {
   }
 }
 
-// Guarda en localStorage (instantáneo) + Firestore en background (si está disponible)
-function saveData(data) {
-  localStorage.setItem(DB_KEY, JSON.stringify(data));
-  if (DOC_REF) {
-    DOC_REF.set({ data }, { merge: true }).catch(e => console.error("Firestore save error:", e));
+// --- Cache local (instantáneo) ---
+function getLocalData() {
+  try {
+    const stored = localStorage.getItem(DB_KEY);
+    return stored ? JSON.parse(stored) : null;
+  } catch (e) {
+    return null;
   }
 }
 
-// Lee de localStorage (instantáneo), sincroniza Firestore en background (si está disponible)
-async function getData() {
-  // localStorage primero (instantáneo)
+function setLocalData(data) {
   try {
-    const stored = localStorage.getItem(DB_KEY);
-    if (stored) {
-      if (DOC_REF) {
-        DOC_REF.get().then(doc => {
-          if (doc.exists) {
-            localStorage.setItem(DB_KEY, JSON.stringify(doc.data().data));
-          }
-        }).catch(() => {});
-      }
-      return JSON.parse(stored);
-    }
+    localStorage.setItem(DB_KEY, JSON.stringify(data));
   } catch (e) {}
+}
 
-  // Sin localStorage, intenta Firestore con timeout (si está disponible)
+// --- Firebase (primario) ---
+
+// Guarda en Firestore (await) + cache en localStorage
+async function saveData(data) {
+  setLocalData(data);
   if (DOC_REF) {
-    try {
-      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 5000));
-      const doc = await Promise.race([DOC_REF.get(), timeout]);
-      if (doc.exists) {
-        const data = doc.data().data;
-        localStorage.setItem(DB_KEY, JSON.stringify(data));
-        return data;
-      }
-    } catch (e) {
-      console.error("Firestore read error:", e);
-    }
+    await DOC_REF.set({ data }, { merge: true });
+  }
+}
+
+// Lee desde Firestore directamente (sin cache)
+async function getFirestoreData() {
+  if (!DOC_REF) return null;
+  try {
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 5000));
+    const doc = await Promise.race([DOC_REF.get(), timeout]);
+    if (doc.exists) return doc.data().data;
+  } catch (e) {
+    console.error("Firestore read error:", e);
   }
   return null;
 }
 
+// --- API pública ---
+
+// getContent: devuelve datos desde localStorage (instantáneo)
+// Si no hay, intenta Firestore; si tampoco, usa DEFAULT_DATA
 async function getContent() {
-  const stored = await getData();
-  if (stored) return stored;
-  saveData(DEFAULT_DATA);
+  const local = getLocalData();
+  if (local) return local;
+  const remote = await getFirestoreData();
+  if (remote) {
+    setLocalData(remote);
+    return remote;
+  }
+  await saveData(DEFAULT_DATA);
   return DEFAULT_DATA;
 }
 
+// syncFromFirestore: obtiene datos frescos desde Firestore y actualiza cache
+// Devuelve los datos si cambiaron, o null si están iguales
+async function syncFromFirestore() {
+  const remote = await getFirestoreData();
+  if (!remote) return null;
+  setLocalData(remote);
+  return remote;
+}
+
+// updateContent y CRUD: leen desde localStorage (rápido), guardan en Firestore (await)
 async function updateContent(updates) {
-  const data = await getContent();
+  const data = getLocalData() || DEFAULT_DATA;
   Object.assign(data, updates);
-  saveData(data);
+  await saveData(data);
   return data;
 }
 
 async function addPortfolioItem(item) {
-  const data = await getContent();
+  const data = getLocalData() || DEFAULT_DATA;
   item.id = Date.now();
   data.portfolio.push(item);
-  saveData(data);
+  await saveData(data);
   return data;
 }
 
 async function updatePortfolioItem(id, updates) {
-  const data = await getContent();
+  const data = getLocalData() || DEFAULT_DATA;
   const idx = data.portfolio.findIndex((p) => p.id === id);
   if (idx !== -1) {
     data.portfolio[idx] = { ...data.portfolio[idx], ...updates };
-    saveData(data);
+    await saveData(data);
   }
   return data;
 }
 
 async function deletePortfolioItem(id) {
-  const data = await getContent();
+  const data = getLocalData() || DEFAULT_DATA;
   data.portfolio = data.portfolio.filter((p) => p.id !== id);
-  saveData(data);
+  await saveData(data);
   return data;
 }
 
 async function addExperienceItem(item) {
-  const data = await getContent();
+  const data = getLocalData() || DEFAULT_DATA;
   item.id = Date.now();
   data.experience.push(item);
-  saveData(data);
+  await saveData(data);
   return data;
 }
 
 async function updateExperienceItem(id, updates) {
-  const data = await getContent();
+  const data = getLocalData() || DEFAULT_DATA;
   const idx = data.experience.findIndex((e) => e.id === id);
   if (idx !== -1) {
     data.experience[idx] = { ...data.experience[idx], ...updates };
-    saveData(data);
+    await saveData(data);
   }
   return data;
 }
 
 async function deleteExperienceItem(id) {
-  const data = await getContent();
+  const data = getLocalData() || DEFAULT_DATA;
   data.experience = data.experience.filter((e) => e.id !== id);
-  saveData(data);
+  await saveData(data);
   return data;
 }
 
@@ -220,9 +236,9 @@ async function updateServices(services) {
 }
 
 async function deleteServiceItem(id) {
-  const data = await getContent();
+  const data = getLocalData() || DEFAULT_DATA;
   data.services = data.services.filter((s) => s.id !== id);
-  saveData(data);
+  await saveData(data);
   return data;
 }
 
