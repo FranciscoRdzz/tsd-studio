@@ -90,104 +90,112 @@ const DEFAULT_DATA = {
   ]
 };
 
-function getData() {
+firebase.initializeApp({
+  apiKey: "AIzaSyBav__PNc1ZEc8PbY4KpwagTfAaR5sMiq8",
+  authDomain: "thiagosimracingdesigns.firebaseapp.com",
+  projectId: "thiagosimracingdesigns",
+  storageBucket: "thiagosimracingdesigns.firebasestorage.app",
+  messagingSenderId: "770558358808",
+  appId: "1:770558358808:web:d54e71e867a965164b5a6d"
+});
+
+const DB = firebase.firestore();
+const DOC_REF = DB.collection("config").doc("siteData");
+
+async function getData() {
   try {
-    const stored = localStorage.getItem(DB_KEY);
-    if (stored) return JSON.parse(stored);
-  } catch (e) {}
+    const doc = await DOC_REF.get();
+    if (doc.exists) return doc.data().data;
+  } catch (e) {
+    console.error("Firestore read error:", e);
+  }
   return null;
 }
 
-function saveData(data) {
+async function saveData(data) {
   try {
-    localStorage.setItem(DB_KEY, JSON.stringify(data));
-  } catch (e) {}
+    await DOC_REF.set({ data }, { merge: true });
+  } catch (e) {
+    console.error("Firestore save error:", e);
+  }
 }
 
-function getContent() {
-  const stored = getData();
+async function getContent() {
+  const stored = await getData();
   if (stored) return stored;
-  saveData(DEFAULT_DATA);
+  await saveData(DEFAULT_DATA);
   return DEFAULT_DATA;
 }
 
-function updateContent(updates) {
-  const data = getContent();
+async function updateContent(updates) {
+  const data = await getContent();
   Object.assign(data, updates);
-  saveData(data);
+  await saveData(data);
   return data;
 }
 
-function addPortfolioItem(item) {
-  const data = getContent();
+async function addPortfolioItem(item) {
+  const data = await getContent();
   item.id = Date.now();
   data.portfolio.push(item);
-  saveData(data);
+  await saveData(data);
   return data;
 }
 
-function updatePortfolioItem(id, updates) {
-  const data = getContent();
+async function updatePortfolioItem(id, updates) {
+  const data = await getContent();
   const idx = data.portfolio.findIndex((p) => p.id === id);
   if (idx !== -1) {
     data.portfolio[idx] = { ...data.portfolio[idx], ...updates };
-    saveData(data);
+    await saveData(data);
   }
   return data;
 }
 
-function deletePortfolioItem(id) {
-  const data = getContent();
+async function deletePortfolioItem(id) {
+  const data = await getContent();
   data.portfolio = data.portfolio.filter((p) => p.id !== id);
-  saveData(data);
+  await saveData(data);
   return data;
 }
 
-function addExperienceItem(item) {
-  const data = getContent();
+async function addExperienceItem(item) {
+  const data = await getContent();
   item.id = Date.now();
   data.experience.push(item);
-  saveData(data);
+  await saveData(data);
   return data;
 }
 
-function updateExperienceItem(id, updates) {
-  const data = getContent();
+async function updateExperienceItem(id, updates) {
+  const data = await getContent();
   const idx = data.experience.findIndex((e) => e.id === id);
   if (idx !== -1) {
     data.experience[idx] = { ...data.experience[idx], ...updates };
-    saveData(data);
+    await saveData(data);
   }
   return data;
 }
 
-function deleteExperienceItem(id) {
-  const data = getContent();
+async function deleteExperienceItem(id) {
+  const data = await getContent();
   data.experience = data.experience.filter((e) => e.id !== id);
-  saveData(data);
+  await saveData(data);
   return data;
 }
 
-function updateServices(services) {
+async function updateServices(services) {
   return updateContent({ services });
 }
 
-function addServiceItem(item) {
-  const data = getContent();
-  item.id = Date.now();
-  data.services.push(item);
-  saveData(data);
-  return data;
-}
-
-function deleteServiceItem(id) {
-  const data = getContent();
+async function deleteServiceItem(id) {
+  const data = await getContent();
   data.services = data.services.filter((s) => s.id !== id);
-  saveData(data);
+  await saveData(data);
   return data;
 }
 
-function updateSiteInfo(site) {
+async function updateSiteInfo(site) {
   return updateContent({ site });
 }
 

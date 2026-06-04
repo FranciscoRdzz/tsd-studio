@@ -37,11 +37,11 @@ function isLoggedIn() {
   return sessionStorage.getItem("tsd-admin") === "true";
 }
 
-function handleLogin() {
+async function handleLogin() {
   const pw = document.getElementById("admin-password").value;
   if (checkAdminPassword(pw)) {
     sessionStorage.setItem("tsd-admin", "true");
-    showPanel();
+    await showPanel();
   } else {
     document.getElementById("admin-error").style.display = "block";
   }
@@ -53,10 +53,10 @@ function handleLogout() {
   document.getElementById("admin-login").style.display = "flex";
 }
 
-function showPanel() {
+async function showPanel() {
   document.getElementById("admin-login").style.display = "none";
   document.getElementById("admin-panel").style.display = "block";
-  loadAllData();
+  await loadAllData();
 }
 
 function showSuccess(msg) {
@@ -66,8 +66,8 @@ function showSuccess(msg) {
   setTimeout(() => el.classList.remove("show"), 3000);
 }
 
-function loadAllData() {
-  siteData = getContent();
+async function loadAllData() {
+  siteData = await getContent();
   // Migration: convert old single-object experience to array
   if (siteData.experience && !Array.isArray(siteData.experience)) {
     const old = siteData.experience;
@@ -78,7 +78,7 @@ function loadAllData() {
       description: old.description || "",
       images: old.images || []
     }];
-    saveData(siteData);
+    await saveData(siteData);
   }
   renderPortfolioList();
   renderExperienceList();
@@ -130,7 +130,7 @@ function closePortfolioForm() {
   editingPortfolioId = null;
 }
 
-function savePortfolioForm() {
+async function savePortfolioForm() {
   const title = document.getElementById("pf-title").value.trim();
   const category = document.getElementById("pf-category").value;
   const image = document.getElementById("pf-image").value.trim() || "assets/portfolio/placeholder.svg";
@@ -141,9 +141,9 @@ function savePortfolioForm() {
   const item = { title, category, image, description };
 
   if (editingPortfolioId) {
-    siteData = updatePortfolioItem(editingPortfolioId, item);
+    siteData = await updatePortfolioItem(editingPortfolioId, item);
   } else {
-    siteData = addPortfolioItem(item);
+    siteData = await addPortfolioItem(item);
   }
   renderPortfolioList();
   closePortfolioForm();
@@ -155,9 +155,9 @@ function editPortfolioItem(id) {
   if (item) openPortfolioForm(item);
 }
 
-function deletePortfolioItem(id) {
+async function deletePortfolioItem(id) {
   if (confirm("Delete this project?")) {
-    siteData = window.deletePortfolioItem(id);
+    siteData = await window.deletePortfolioItem(id);
     renderPortfolioList();
     showSuccess("Project deleted");
   }
@@ -207,7 +207,7 @@ function closeExperienceForm() {
   editingExperienceId = null;
 }
 
-function saveExperienceForm() {
+async function saveExperienceForm() {
   const title = document.getElementById("expf-title").value.trim();
   const subtitle = document.getElementById("expf-subtitle").value.trim();
   const description = document.getElementById("expf-desc").value.trim();
@@ -216,9 +216,9 @@ function saveExperienceForm() {
   if (!title) return;
 
   if (editingExperienceId) {
-    siteData = updateExperienceItem(editingExperienceId, { title, subtitle, description, images });
+    siteData = await updateExperienceItem(editingExperienceId, { title, subtitle, description, images });
   } else {
-    siteData = addExperienceItem({ title, subtitle, description, images });
+    siteData = await addExperienceItem({ title, subtitle, description, images });
   }
   renderExperienceList();
   closeExperienceForm();
@@ -230,9 +230,9 @@ function editExperienceItem(id) {
   if (item) openExperienceForm(item);
 }
 
-function deleteExperienceItem(id) {
+async function deleteExperienceItem(id) {
   if (confirm("Delete this experience entry?")) {
-    siteData = window.deleteExperienceItem(id);
+    siteData = await window.deleteExperienceItem(id);
     renderExperienceList();
     showSuccess("Experience deleted");
   }
@@ -333,7 +333,7 @@ function renderServicesForm() {
   container.innerHTML = html;
 }
 
-function saveServices() {
+async function saveServices() {
   const entries = document.querySelectorAll("#admin-services-form .admin-service-entry");
   const services = [];
   entries.forEach((entry) => {
@@ -345,7 +345,7 @@ function saveServices() {
       services.push({ id, title, description, price });
     }
   });
-  siteData = updateServices(services);
+  siteData = await updateServices(services);
   showSuccess();
 }
 
@@ -381,9 +381,9 @@ function addServiceEntry() {
   div.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
-function deleteServiceEntry(id) {
+async function deleteServiceEntry(id) {
   if (confirm("Delete this service?")) {
-    siteData = window.deleteServiceItem(id);
+    siteData = await window.deleteServiceItem(id);
     renderServicesForm();
     showSuccess("Service deleted");
   }
@@ -412,7 +412,7 @@ function renderSiteForm() {
   s("site-donation");
 }
 
-function saveSiteText() {
+async function saveSiteText() {
   const site = {
     title: document.getElementById("site-title").value.trim(),
     subtitle: document.getElementById("site-subtitle").value.trim(),
@@ -426,7 +426,7 @@ function saveSiteText() {
       donation: document.getElementById("site-donation").value.trim(),
     }
   };
-  siteData = updateSiteInfo(site);
+  siteData = await updateSiteInfo(site);
   showSuccess();
 }
 

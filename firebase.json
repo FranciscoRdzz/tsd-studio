@@ -1,0 +1,17 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      ".firebaserc",
+      "netlify.toml",
+      "**/.*"
+    ],
+    "rewrites": [
+      {
+        "source": "/admin",
+        "destination": "/admin.html"
+      }
+    ]
+  }
+}

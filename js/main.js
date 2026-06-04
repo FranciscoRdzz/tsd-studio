@@ -3,9 +3,9 @@ let currentFilter = "all";
 let currentLightboxIndex = -1;
 let filteredPortfolio = [];
 
-function init() {
+async function init() {
   try {
-    siteData = getContent();
+    siteData = await getContent();
     // Migration: convert old single-object experience to array
     if (siteData.experience && !Array.isArray(siteData.experience)) {
       const old = siteData.experience;
@@ -325,4 +325,4 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener("DOMContentLoaded", () => init());
