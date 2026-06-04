@@ -90,50 +90,63 @@ const DEFAULT_DATA = {
   ]
 };
 
-firebase.initializeApp({
-  apiKey: "AIzaSyBav__PNc1ZEc8PbY4KpwagTfAaR5sMiq8",
-  authDomain: "thiagosimracingdesigns.firebaseapp.com",
-  projectId: "thiagosimracingdesigns",
-  storageBucket: "thiagosimracingdesigns.firebasestorage.app",
-  messagingSenderId: "770558358808",
-  appId: "1:770558358808:web:d54e71e867a965164b5a6d"
-});
-
-const DB = firebase.firestore();
-const DOC_REF = DB.collection("config").doc("siteData");
-
-// Guarda en localStorage (instantáneo) + Firestore en background
-function saveData(data) {
-  localStorage.setItem(DB_KEY, JSON.stringify(data));
-  DOC_REF.set({ data }, { merge: true }).catch(e => console.error("Firestore save error:", e));
+// Firebase opcional — solo disponible si se cargaron los SDKs (admin.html)
+let DOC_REF = null;
+if (typeof firebase !== "undefined" && firebase.initializeApp) {
+  try {
+    firebase.initializeApp({
+      apiKey: "AIzaSyBav__PNc1ZEc8PbY4KpwagTfAaR5sMiq8",
+      authDomain: "thiagosimracingdesigns.firebaseapp.com",
+      projectId: "thiagosimracingdesigns",
+      storageBucket: "thiagosimracingdesigns.firebasestorage.app",
+      messagingSenderId: "770558358808",
+      appId: "1:770558358808:web:d54e71e867a965164b5a6d"
+    });
+    const DB = firebase.firestore();
+    DOC_REF = DB.collection("config").doc("siteData");
+  } catch (e) {
+    console.error("Firebase init error:", e);
+  }
 }
 
-// Lee de localStorage (instantáneo), sincroniza Firestore en background
+// Guarda en localStorage (instantáneo) + Firestore en background (si está disponible)
+function saveData(data) {
+  localStorage.setItem(DB_KEY, JSON.stringify(data));
+  if (DOC_REF) {
+    DOC_REF.set({ data }, { merge: true }).catch(e => console.error("Firestore save error:", e));
+  }
+}
+
+// Lee de localStorage (instantáneo), sincroniza Firestore en background (si está disponible)
 async function getData() {
   // localStorage primero (instantáneo)
   try {
     const stored = localStorage.getItem(DB_KEY);
     if (stored) {
-      DOC_REF.get().then(doc => {
-        if (doc.exists) {
-          localStorage.setItem(DB_KEY, JSON.stringify(doc.data().data));
-        }
-      }).catch(() => {});
+      if (DOC_REF) {
+        DOC_REF.get().then(doc => {
+          if (doc.exists) {
+            localStorage.setItem(DB_KEY, JSON.stringify(doc.data().data));
+          }
+        }).catch(() => {});
+      }
       return JSON.parse(stored);
     }
   } catch (e) {}
 
-  // Sin localStorage, intenta Firestore con timeout
-  try {
-    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 5000));
-    const doc = await Promise.race([DOC_REF.get(), timeout]);
-    if (doc.exists) {
-      const data = doc.data().data;
-      localStorage.setItem(DB_KEY, JSON.stringify(data));
-      return data;
+  // Sin localStorage, intenta Firestore con timeout (si está disponible)
+  if (DOC_REF) {
+    try {
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 5000));
+      const doc = await Promise.race([DOC_REF.get(), timeout]);
+      if (doc.exists) {
+        const data = doc.data().data;
+        localStorage.setItem(DB_KEY, JSON.stringify(data));
+        return data;
+      }
+    } catch (e) {
+      console.error("Firestore read error:", e);
     }
-  } catch (e) {
-    console.error("Firestore read error:", e);
   }
   return null;
 }
