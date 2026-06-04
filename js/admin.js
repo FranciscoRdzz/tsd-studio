@@ -67,7 +67,8 @@ function showSuccess(msg) {
 }
 
 async function loadAllData() {
-  siteData = await getContent();
+  // getContent(true) espera a Firestore antes de renderizar
+  siteData = await getContent(true);
   // Migration: convert old single-object experience to array
   if (siteData.experience && !Array.isArray(siteData.experience)) {
     const old = siteData.experience;
@@ -84,7 +85,7 @@ async function loadAllData() {
   renderExperienceList();
   renderServicesForm();
   renderSiteForm();
-  // Re-render si llegan datos frescos desde Firestore
+  // Re-render si llegan datos actualizados desde Firestore
   document.addEventListener("data-refresh", (e) => {
     siteData = e.detail;
     renderPortfolioList();

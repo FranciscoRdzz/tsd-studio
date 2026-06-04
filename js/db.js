@@ -143,19 +143,28 @@ async function saveData(data) {
 // y en background intenta obtener desde Firestore.
 let loadingFromFirestore = false;
 
-async function getContent() {
-  if (cachedData) return cachedData;
+async function getContent(blocking = false) {
+  // Modo bloqueante: espera Firestore, fallback a cache/DEFAULT_DATA
+  if (blocking) {
+    const remote = await getFirestoreData();
+    if (remote) {
+      cachedData = remote;
+      return remote;
+    }
+    if (cachedData) return cachedData;
+    cachedData = DEFAULT_DATA;
+    return DEFAULT_DATA;
+  }
 
-  // Primera vez: devolver DEFAULT_DATA inmediatamente
+  // Modo no bloqueante: devuelve al instante, actualiza en background
+  if (cachedData) return cachedData;
   cachedData = DEFAULT_DATA;
 
-  // En background, intentar cargar desde Firestore
   if (!loadingFromFirestore) {
     loadingFromFirestore = true;
     getFirestoreData().then(remote => {
       if (remote) {
         cachedData = remote;
-        // Disparar evento para que main.js/admin.js re-rendericen
         document.dispatchEvent(new CustomEvent("data-refresh", { detail: remote }));
       }
     }).catch(() => {}).finally(() => { loadingFromFirestore = false; });
