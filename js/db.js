@@ -102,35 +102,53 @@ firebase.initializeApp({
 const DB = firebase.firestore();
 const DOC_REF = DB.collection("config").doc("siteData");
 
+// Guarda en localStorage (instantáneo) + Firestore en background
+function saveData(data) {
+  localStorage.setItem(DB_KEY, JSON.stringify(data));
+  DOC_REF.set({ data }, { merge: true }).catch(e => console.error("Firestore save error:", e));
+}
+
+// Lee de localStorage (instantáneo), sincroniza Firestore en background
 async function getData() {
+  // localStorage primero (instantáneo)
   try {
-    const doc = await DOC_REF.get();
-    if (doc.exists) return doc.data().data;
+    const stored = localStorage.getItem(DB_KEY);
+    if (stored) {
+      DOC_REF.get().then(doc => {
+        if (doc.exists) {
+          localStorage.setItem(DB_KEY, JSON.stringify(doc.data().data));
+        }
+      }).catch(() => {});
+      return JSON.parse(stored);
+    }
+  } catch (e) {}
+
+  // Sin localStorage, intenta Firestore con timeout
+  try {
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 5000));
+    const doc = await Promise.race([DOC_REF.get(), timeout]);
+    if (doc.exists) {
+      const data = doc.data().data;
+      localStorage.setItem(DB_KEY, JSON.stringify(data));
+      return data;
+    }
   } catch (e) {
     console.error("Firestore read error:", e);
   }
   return null;
 }
 
-async function saveData(data) {
-  try {
-    await DOC_REF.set({ data }, { merge: true });
-  } catch (e) {
-    console.error("Firestore save error:", e);
-  }
-}
-
 async function getContent() {
   const stored = await getData();
   if (stored) return stored;
-  await saveData(DEFAULT_DATA);
+  saveData(DEFAULT_DATA);
   return DEFAULT_DATA;
 }
 
 async function updateContent(updates) {
   const data = await getContent();
   Object.assign(data, updates);
-  await saveData(data);
+  saveData(data);
   return data;
 }
 
@@ -138,7 +156,7 @@ async function addPortfolioItem(item) {
   const data = await getContent();
   item.id = Date.now();
   data.portfolio.push(item);
-  await saveData(data);
+  saveData(data);
   return data;
 }
 
@@ -147,7 +165,7 @@ async function updatePortfolioItem(id, updates) {
   const idx = data.portfolio.findIndex((p) => p.id === id);
   if (idx !== -1) {
     data.portfolio[idx] = { ...data.portfolio[idx], ...updates };
-    await saveData(data);
+    saveData(data);
   }
   return data;
 }
@@ -155,7 +173,7 @@ async function updatePortfolioItem(id, updates) {
 async function deletePortfolioItem(id) {
   const data = await getContent();
   data.portfolio = data.portfolio.filter((p) => p.id !== id);
-  await saveData(data);
+  saveData(data);
   return data;
 }
 
@@ -163,7 +181,7 @@ async function addExperienceItem(item) {
   const data = await getContent();
   item.id = Date.now();
   data.experience.push(item);
-  await saveData(data);
+  saveData(data);
   return data;
 }
 
@@ -172,7 +190,7 @@ async function updateExperienceItem(id, updates) {
   const idx = data.experience.findIndex((e) => e.id === id);
   if (idx !== -1) {
     data.experience[idx] = { ...data.experience[idx], ...updates };
-    await saveData(data);
+    saveData(data);
   }
   return data;
 }
@@ -180,7 +198,7 @@ async function updateExperienceItem(id, updates) {
 async function deleteExperienceItem(id) {
   const data = await getContent();
   data.experience = data.experience.filter((e) => e.id !== id);
-  await saveData(data);
+  saveData(data);
   return data;
 }
 
@@ -191,7 +209,7 @@ async function updateServices(services) {
 async function deleteServiceItem(id) {
   const data = await getContent();
   data.services = data.services.filter((s) => s.id !== id);
-  await saveData(data);
+  saveData(data);
   return data;
 }
 
