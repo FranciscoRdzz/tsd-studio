@@ -30,6 +30,7 @@ async function init() {
   initMobileMenu();
   initLanguage();
   translatePage();
+  renderSiteInfo();
   setupPortfolioFilters();
   setupLightbox();
 }
@@ -115,6 +116,27 @@ function initLanguage() {
       btn.classList.add("active");
     });
   });
+}
+
+function renderSiteInfo() {
+  const site = siteData.site;
+  if (!site) return;
+  document.title = site.title || "TSD Studio";
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc && site.description) metaDesc.content = site.description;
+  const logo = document.querySelector(".navbar-logo");
+  if (logo) {
+    const parts = (site.title || "TSD Studio").split(/\s+/);
+    if (parts.length >= 2) {
+      logo.innerHTML = `${parts.slice(0, -1).join(" ")} <span>${parts[parts.length - 1]}</span>`;
+    } else {
+      logo.textContent = site.title || "TSD Studio";
+    }
+  }
+  const heroTag = document.querySelector(".hero-tag");
+  if (heroTag && site.heroTag) heroTag.textContent = site.heroTag;
+  const heroSub = document.querySelector(".hero-subtitle");
+  if (heroSub && site.subtitle) heroSub.textContent = site.subtitle;
 }
 
 function renderPortfolio() {
