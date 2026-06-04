@@ -80,17 +80,6 @@ async function loadAllData() {
     }];
     await saveData(siteData);
   }
-  renderAllAdmin();
-  // Sincronizar desde Firestore en background
-  syncFromFirestore().then(fresh => {
-    if (fresh && JSON.stringify(fresh) !== JSON.stringify(siteData)) {
-      siteData = fresh;
-      renderAllAdmin();
-    }
-  });
-}
-
-function renderAllAdmin() {
   renderPortfolioList();
   renderExperienceList();
   renderServicesForm();

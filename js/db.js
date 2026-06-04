@@ -1,4 +1,3 @@
-const DB_KEY = "tsd-studio-data";
 const ADMIN_PASSWORD_HASH = "tsd-admin-2024";
 
 const PAYPAL_DONATION = "https://paypal.me/AndresTovar2320";
@@ -109,33 +108,7 @@ if (typeof firebase !== "undefined" && firebase.initializeApp) {
   }
 }
 
-// --- Cache local (instantáneo) ---
-function getLocalData() {
-  try {
-    const stored = localStorage.getItem(DB_KEY);
-    return stored ? JSON.parse(stored) : null;
-  } catch (e) {
-    return null;
-  }
-}
-
-function setLocalData(data) {
-  try {
-    localStorage.setItem(DB_KEY, JSON.stringify(data));
-  } catch (e) {}
-}
-
-// --- Firebase (primario) ---
-
-// Guarda en Firestore (await) + cache en localStorage
-async function saveData(data) {
-  setLocalData(data);
-  if (DOC_REF) {
-    await DOC_REF.set({ data }, { merge: true });
-  }
-}
-
-// Lee desde Firestore directamente (sin cache)
+// Lee datos desde Firestore (timeout 5s)
 async function getFirestoreData() {
   if (!DOC_REF) return null;
   try {
@@ -148,41 +121,32 @@ async function getFirestoreData() {
   return null;
 }
 
+// Guarda datos en Firestore
+async function saveData(data) {
+  if (!DOC_REF) return;
+  await DOC_REF.set({ data }, { merge: true });
+}
+
 // --- API pública ---
 
-// getContent: devuelve datos desde localStorage (instantáneo)
-// Si no hay, intenta Firestore; si tampoco, usa DEFAULT_DATA
+// Obtiene datos desde Firestore.
+// Si no hay datos en Firestore, guarda DEFAULT_DATA y los devuelve.
 async function getContent() {
-  const local = getLocalData();
-  if (local) return local;
   const remote = await getFirestoreData();
-  if (remote) {
-    setLocalData(remote);
-    return remote;
-  }
+  if (remote) return remote;
   await saveData(DEFAULT_DATA);
   return DEFAULT_DATA;
 }
 
-// syncFromFirestore: obtiene datos frescos desde Firestore y actualiza cache
-// Devuelve los datos si cambiaron, o null si están iguales
-async function syncFromFirestore() {
-  const remote = await getFirestoreData();
-  if (!remote) return null;
-  setLocalData(remote);
-  return remote;
-}
-
-// updateContent y CRUD: leen desde localStorage (rápido), guardan en Firestore (await)
 async function updateContent(updates) {
-  const data = getLocalData() || DEFAULT_DATA;
+  const data = await getContent();
   Object.assign(data, updates);
   await saveData(data);
   return data;
 }
 
 async function addPortfolioItem(item) {
-  const data = getLocalData() || DEFAULT_DATA;
+  const data = await getContent();
   item.id = Date.now();
   data.portfolio.push(item);
   await saveData(data);
@@ -190,7 +154,7 @@ async function addPortfolioItem(item) {
 }
 
 async function updatePortfolioItem(id, updates) {
-  const data = getLocalData() || DEFAULT_DATA;
+  const data = await getContent();
   const idx = data.portfolio.findIndex((p) => p.id === id);
   if (idx !== -1) {
     data.portfolio[idx] = { ...data.portfolio[idx], ...updates };
@@ -200,14 +164,14 @@ async function updatePortfolioItem(id, updates) {
 }
 
 async function deletePortfolioItem(id) {
-  const data = getLocalData() || DEFAULT_DATA;
+  const data = await getContent();
   data.portfolio = data.portfolio.filter((p) => p.id !== id);
   await saveData(data);
   return data;
 }
 
 async function addExperienceItem(item) {
-  const data = getLocalData() || DEFAULT_DATA;
+  const data = await getContent();
   item.id = Date.now();
   data.experience.push(item);
   await saveData(data);
@@ -215,7 +179,7 @@ async function addExperienceItem(item) {
 }
 
 async function updateExperienceItem(id, updates) {
-  const data = getLocalData() || DEFAULT_DATA;
+  const data = await getContent();
   const idx = data.experience.findIndex((e) => e.id === id);
   if (idx !== -1) {
     data.experience[idx] = { ...data.experience[idx], ...updates };
@@ -225,7 +189,7 @@ async function updateExperienceItem(id, updates) {
 }
 
 async function deleteExperienceItem(id) {
-  const data = getLocalData() || DEFAULT_DATA;
+  const data = await getContent();
   data.experience = data.experience.filter((e) => e.id !== id);
   await saveData(data);
   return data;
@@ -236,7 +200,7 @@ async function updateServices(services) {
 }
 
 async function deleteServiceItem(id) {
-  const data = getLocalData() || DEFAULT_DATA;
+  const data = await getContent();
   data.services = data.services.filter((s) => s.id !== id);
   await saveData(data);
   return data;

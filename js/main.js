@@ -33,22 +33,6 @@ async function init() {
   renderSiteInfo();
   setupPortfolioFilters();
   setupLightbox();
-  // Sincronizar desde Firestore en background y re-render si hay cambios
-  syncFromFirestore().then(fresh => {
-    if (fresh && JSON.stringify(fresh) !== JSON.stringify(siteData)) {
-      siteData = fresh;
-      reRenderAll();
-    }
-  });
-}
-
-function reRenderAll() {
-  renderPortfolio();
-  renderExperience();
-  renderServices();
-  loadSocialLinks();
-  renderSiteInfo();
-  initScrollReveal();
 }
 
 function initNavigation() {
