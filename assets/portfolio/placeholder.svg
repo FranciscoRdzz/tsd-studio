@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <rect width="800" height="500" fill="#1A1A1A"/>
+  <rect x="2" y="2" width="796" height="496" fill="none" stroke="#2A2A2A" stroke-width="1"/>
+  <text x="400" y="220" font-family="Inter, sans-serif" font-size="32" font-weight="800" fill="#333" text-anchor="middle" letter-spacing="4">TSD</text>
+  <text x="400" y="260" font-family="Inter, sans-serif" font-size="14" font-weight="400" fill="#333" text-anchor="middle" letter-spacing="6">STUDIO</text>
+  <rect x="340" y="290" width="120" height="1" fill="#333"/>
+</svg>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TSD Studio — Exclusive iRacing design studio. Custom liveries, suits, helmets & esports merchandise.">
+  <title>TSD Studio — Thiago Simracing Designs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="#hero" class="navbar-logo">TSD <span>Studio</span></a>
+      <button class="navbar-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="navbar-links">
+        <li><a href="#hero" class="active" data-i18n="nav.home">Home</a></li>
+        <li><a href="#portfolio" data-i18n="nav.portfolio">Portfolio</a></li>
+        <li><a href="#experience" data-i18n="nav.experience">Experience</a></li>
+        <li><a href="#services" data-i18n="nav.services">Services</a></li>
+        <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+        <li>
+          <div class="lang-switch">
+            <button data-lang="en" class="active">EN</button>
+            <button data-lang="es">ES</button>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <video class="hero-video" autoplay muted loop playsinline poster="assets/images/poster.jpg">
+      <source src="assets/video/hero.mp4" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-tag" data-i18n="hero.tag">Precision in Every Pixel</div>
+      <h1 class="hero-title">TSD<br><span class="gradient">Studio</span></h1>
+      <p class="hero-subtitle" data-i18n="hero.subtitle">Exclusive iRacing design studio — custom liveries, suits, helmets & esports merchandise.</p>
+      <a href="#portfolio" class="hero-cta" data-i18n="hero.cta">View Portfolio</a>
+    </div>
+    <div class="hero-scroll">
+      <span data-i18n="hero.scroll">Scroll to explore</span>
+      <div class="hero-scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- Portfolio Section -->
+  <section class="section" id="portfolio">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label" data-i18n="portfolio.title">Portfolio</div>
+        <h2 class="section-title" data-i18n="portfolio.subtitle">Selected works</h2>
+      </div>
+      <div class="portfolio-filters reveal-stagger">
+        <button class="portfolio-filter active" data-filter="all" data-i18n="portfolio.filterAll">All</button>
+        <button class="portfolio-filter" data-filter="cars" data-i18n="portfolio.filterCars">Cars</button>
+        <button class="portfolio-filter" data-filter="suits" data-i18n="portfolio.filterSuits">Suits</button>
+        <button class="portfolio-filter" data-filter="helmets" data-i18n="portfolio.filterHelmets">Helmets</button>
+        <button class="portfolio-filter" data-filter="tshirts" data-i18n="portfolio.filterTshirts">T-Shirts</button>
+      </div>
+      <div class="portfolio-grid" id="portfolio-grid"></div>
+    </div>
+  </section>
+
+  <!-- Experience Section -->
+  <section class="section section-dark" id="experience">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label" data-i18n="experience.title">Experience</div>
+        <h2 class="section-subtitle" data-i18n="experience.subtitle">Selected experiences</h2>
+      </div>
+      <div class="experience-grid" id="experience-grid"></div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section class="section" id="services">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label" data-i18n="services.title">Services</div>
+        <h2 class="section-title" data-i18n="services.subtitle">What I do</h2>
+      </div>
+      <div class="services-grid" id="services-grid"></div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="section section-dark" id="contact">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-label" data-i18n="contact.title">Contact</div>
+        <h2 class="section-title" data-i18n="contact.subtitle">Let's build something</h2>
+      </div>
+      <div class="contact-grid reveal-stagger">
+        <div class="contact-card">
+          <div class="contact-card-icon">
+            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+          </div>
+          <h3 data-i18n="contact.discord">Open a Ticket on Discord</h3>
+          <p data-i18n="contact.discordDesc">For design requests, questions, and updates — join the Discord server and open a ticket.</p>
+          <a href="https://discord.gg/PhcxHCpWFc" target="_blank" class="contact-card-btn" data-i18n="contact.discord" data-social="discord">Open a Ticket on Discord</a>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card-icon">
+            <svg viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 0 2.5 1.25 1.25 0 0 1 0-2.5M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10m0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
+          </div>
+          <h3 data-i18n="contact.instagram">Follow on Instagram</h3>
+          <p>@thiagosimracingdesigns</p>
+          <a href="https://www.instagram.com/thiagosimracingdesigns" target="_blank" class="contact-card-btn" data-i18n="contact.instagram" data-social="instagram">Follow on Instagram</a>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+          </div>
+          <h3 data-i18n="contact.tradingPaints">Trading Paints</h3>
+          <p>View profile on Trading Paints</p>
+          <a href="https://www.tradingpaints.com/profile/1224486/Andres-Tovar" target="_blank" class="contact-card-btn" data-i18n="contact.tradingPaints" data-social="tradingpaints">Trading Paints Profile</a>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card-icon">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h2v2H6v-2zm0 4h8v2H6v-2zm10 0h2v2h-2v-2zm-6-4h8v2h-8v-2z"/></svg>
+          </div>
+          <h3 data-i18n="contact.donation">Buy me a Coffee</h3>
+          <p data-i18n="contact.donationDesc">Support via PayPal donation!</p>
+          <a href="https://paypal.me/AndresTovar2320" target="_blank" class="contact-card-btn" data-i18n="contact.donation" data-social="donation">Buy me a Coffee</a>
+        </div>
+      </div>
+      <div class="contact-social">
+        <a href="https://discord.gg/PhcxHCpWFc" target="_blank" aria-label="Discord" data-social="discord">
+          <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/thiagosimracingdesigns" target="_blank" aria-label="Instagram" data-social="instagram">
+          <svg viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 0 2.5 1.25 1.25 0 0 1 0-2.5M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10m0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
+        </a>
+        <a href="https://www.tradingpaints.com/profile/1224486/Andres-Tovar" target="_blank" aria-label="Trading Paints" data-social="tradingpaints">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 TSD Studio. <span data-i18n="footer.copyright">All rights reserved.</span></p>
+      <div class="footer-made">
+        <span data-i18n="footer.made">Made for iRacing</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-content">
+      <button class="lightbox-close">&times;</button>
+      <button class="lightbox-nav prev">&lsaquo;</button>
+      <button class="lightbox-nav next">&rsaquo;</button>
+      <img src="" alt="">
+      <div class="lightbox-info">
+        <h3></h3>
+        <p></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

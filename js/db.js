@@ -1,0 +1,196 @@
+const DB_KEY = "tsd-studio-data";
+const ADMIN_PASSWORD_HASH = "tsd-admin-2024";
+
+const PAYPAL_DONATION = "https://paypal.me/AndresTovar2320";
+
+const DEFAULT_DATA = {
+  site: {
+    title: "TSD Studio",
+    subtitle: "Thiago Simracing Designs",
+    description: "Exclusive iRacing design studio specializing in custom liveries, suits, helmets, and esports merchandise for competitive simracers.",
+    heroTag: "Precision in Every Pixel",
+    social: {
+      discord: "https://discord.gg/PhcxHCpWFc",
+      instagram: "https://www.instagram.com/thiagosimracingdesigns",
+      tradingpaints: "https://www.tradingpaints.com/profile/1224486/Andres-Tovar",
+      team: "https://www.instagram.com/lmresports/",
+      donation: PAYPAL_DONATION
+    }
+  },
+  experience: [
+    {
+      id: 1,
+      title: "LMR Esports — Official Designer",
+      subtitle: "Official designer for LMR Esports",
+      description: "Currently serving as the official designer for LMR Esports, a top split iRacing team. Responsible for creating custom car liveries, driver suits, and team merchandise.",
+      images: [
+        { id: 1, src: "assets/experience/placeholder.svg", caption: "Official Designer at LMR Esports" },
+        { id: 2, src: "assets/experience/placeholder.svg", caption: "1000+ Followers on Instagram" },
+        { id: 3, src: "assets/experience/placeholder.svg", caption: "5000+ Trading Paints Downloads" }
+      ]
+    }
+  ],
+  services: [
+    {
+      id: 1, category: "cars",
+      title: "Car Liveries",
+      description: "Custom paint schemes for any iRacing car. From sleek minimal designs to complex sponsor layouts.",
+      price: "From $25"
+    },
+    {
+      id: 2, category: "suits",
+      title: "Driver Suits",
+      description: "Personalized racing suits with custom colors, logos, and patterns to match your team identity.",
+      price: "From $15"
+    },
+    {
+      id: 3, category: "helmets",
+      title: "Helmets",
+      description: "Stand out on track with a custom helmet design that reflects your style and personality.",
+      price: "From $10"
+    },
+    {
+      id: 4, category: "tshirts",
+      title: "Esports T-Shirts",
+      description: "Team merchandise and apparel designs ready for print, built for the simracing community.",
+      price: "From $20"
+    }
+  ],
+  portfolio: [
+    {
+      id: 1, title: "Prototype Livery", category: "cars",
+      image: "assets/portfolio/placeholder.svg",
+      description: "Custom livery design for GTP class"
+    },
+    {
+      id: 2, title: "GT3 Special Edition", category: "cars",
+      image: "assets/portfolio/placeholder.svg",
+      description: "Full wrap design for GT3 competition"
+    },
+    {
+      id: 3, title: "Team Race Suit", category: "suits",
+      image: "assets/portfolio/placeholder.svg",
+      description: "Matching team suit design"
+    },
+    {
+      id: 4, title: "Arai Custom Helmet", category: "helmets",
+      image: "assets/portfolio/placeholder.svg",
+      description: "Custom Arai helmet paint scheme"
+    },
+    {
+      id: 5, title: "Esports Team Tee", category: "tshirts",
+      image: "assets/portfolio/placeholder.svg",
+      description: "Team merchandise t-shirt design"
+    },
+    {
+      id: 6, title: "Oval Special", category: "cars",
+      image: "assets/portfolio/placeholder.svg",
+      description: "Oval racing custom livery"
+    }
+  ]
+};
+
+function getData() {
+  try {
+    const stored = localStorage.getItem(DB_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch (e) {}
+  return null;
+}
+
+function saveData(data) {
+  try {
+    localStorage.setItem(DB_KEY, JSON.stringify(data));
+  } catch (e) {}
+}
+
+function getContent() {
+  const stored = getData();
+  if (stored) return stored;
+  saveData(DEFAULT_DATA);
+  return DEFAULT_DATA;
+}
+
+function updateContent(updates) {
+  const data = getContent();
+  Object.assign(data, updates);
+  saveData(data);
+  return data;
+}
+
+function addPortfolioItem(item) {
+  const data = getContent();
+  item.id = Date.now();
+  data.portfolio.push(item);
+  saveData(data);
+  return data;
+}
+
+function updatePortfolioItem(id, updates) {
+  const data = getContent();
+  const idx = data.portfolio.findIndex((p) => p.id === id);
+  if (idx !== -1) {
+    data.portfolio[idx] = { ...data.portfolio[idx], ...updates };
+    saveData(data);
+  }
+  return data;
+}
+
+function deletePortfolioItem(id) {
+  const data = getContent();
+  data.portfolio = data.portfolio.filter((p) => p.id !== id);
+  saveData(data);
+  return data;
+}
+
+function addExperienceItem(item) {
+  const data = getContent();
+  item.id = Date.now();
+  data.experience.push(item);
+  saveData(data);
+  return data;
+}
+
+function updateExperienceItem(id, updates) {
+  const data = getContent();
+  const idx = data.experience.findIndex((e) => e.id === id);
+  if (idx !== -1) {
+    data.experience[idx] = { ...data.experience[idx], ...updates };
+    saveData(data);
+  }
+  return data;
+}
+
+function deleteExperienceItem(id) {
+  const data = getContent();
+  data.experience = data.experience.filter((e) => e.id !== id);
+  saveData(data);
+  return data;
+}
+
+function updateServices(services) {
+  return updateContent({ services });
+}
+
+function addServiceItem(item) {
+  const data = getContent();
+  item.id = Date.now();
+  data.services.push(item);
+  saveData(data);
+  return data;
+}
+
+function deleteServiceItem(id) {
+  const data = getContent();
+  data.services = data.services.filter((s) => s.id !== id);
+  saveData(data);
+  return data;
+}
+
+function updateSiteInfo(site) {
+  return updateContent({ site });
+}
+
+function checkAdminPassword(password) {
+  return password === ADMIN_PASSWORD_HASH;
+}

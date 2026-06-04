@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TSD Studio — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    body {
+      padding-top: 0;
+    }
+    .admin-login {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--black);
+    }
+    .admin-login-box {
+      width: 100%;
+      max-width: 400px;
+      padding: 48px 32px;
+      border: 1px solid var(--gray-mid);
+      text-align: center;
+    }
+    .admin-login-box h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 32px;
+    }
+    .admin-login-box input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--gray);
+      border: 1px solid var(--gray-mid);
+      color: var(--white);
+      font-size: 0.95rem;
+      font-family: var(--font-family);
+      margin-bottom: 16px;
+      outline: none;
+      transition: border var(--transition);
+    }
+    .admin-login-box input:focus {
+      border-color: var(--white);
+    }
+    .admin-login-box input::placeholder {
+      color: var(--gray-mid);
+    }
+    .admin-login-box button {
+      width: 100%;
+      padding: 14px;
+      background: var(--white);
+      color: var(--black);
+      border: none;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: background var(--transition);
+      font-family: var(--font-family);
+    }
+    .admin-login-box button:hover {
+      background: var(--gray-light);
+    }
+    .admin-error {
+      color: #ff4444;
+      font-size: 0.85rem;
+      margin-top: 12px;
+      display: none;
+    }
+    .admin-panel {
+      display: none;
+      min-height: 100vh;
+      background: var(--black);
+    }
+    .admin-header {
+      padding: 20px 32px;
+      border-bottom: 1px solid var(--gray-mid);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .admin-header h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .admin-header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .admin-header-actions a {
+      font-size: 0.8rem;
+      color: var(--gray-light);
+    }
+    .admin-btn-logout {
+      padding: 8px 20px;
+      background: transparent;
+      border: 1px solid var(--gray-mid);
+      color: var(--white);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-family: var(--font-family);
+    }
+    .admin-btn-logout:hover {
+      border-color: var(--white);
+    }
+    .admin-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--gray-mid);
+      overflow-x: auto;
+    }
+    .admin-tab {
+      padding: 14px 28px;
+      background: none;
+      border: none;
+      color: var(--gray-light);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-family: var(--font-family);
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+    }
+    .admin-tab:hover {
+      color: var(--white);
+    }
+    .admin-tab.active {
+      color: var(--white);
+      border-bottom-color: var(--white);
+    }
+    .admin-content {
+      padding: 32px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .admin-section {
+      display: none;
+    }
+    .admin-section.active {
+      display: block;
+    }
+    .admin-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .admin-section-header h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .admin-btn {
+      padding: 10px 24px;
+      background: var(--white);
+      color: var(--black);
+      border: none;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-family: var(--font-family);
+    }
+    .admin-btn:hover {
+      background: var(--gray-light);
+    }
+    .admin-btn-secondary {
+      background: transparent;
+      border: 1px solid var(--gray-mid);
+      color: var(--white);
+    }
+    .admin-btn-secondary:hover {
+      border-color: var(--white);
+      background: transparent;
+    }
+    .admin-btn-danger {
+      background: transparent;
+      border: 1px solid #ff4444;
+      color: #ff4444;
+    }
+    .admin-btn-danger:hover {
+      background: #ff4444;
+      color: var(--white);
+    }
+    .admin-card {
+      padding: 20px 24px;
+      border: 1px solid var(--gray-mid);
+      background: var(--gray);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .admin-card-info h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .admin-card-info span {
+      font-size: 0.8rem;
+      color: var(--gray-light);
+    }
+    .admin-card-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .admin-card-actions button {
+      padding: 6px 16px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-family: var(--font-family);
+    }
+    .admin-btn-small {
+      background: transparent;
+      border: 1px solid var(--gray-mid);
+      color: var(--white);
+    }
+    .admin-btn-small:hover {
+      border-color: var(--white);
+    }
+    .admin-form {
+      display: none;
+      padding: 24px;
+      border: 1px solid var(--gray-mid);
+      background: var(--gray);
+      margin-bottom: 24px;
+    }
+    .admin-form.open {
+      display: block;
+    }
+    .admin-form label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      color: var(--gray-light);
+    }
+    .admin-form input,
+    .admin-form select,
+    .admin-form textarea {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--black);
+      border: 1px solid var(--gray-mid);
+      color: var(--white);
+      font-size: 0.9rem;
+      font-family: var(--font-family);
+      margin-bottom: 16px;
+      outline: none;
+      transition: border var(--transition);
+    }
+    .admin-form input:focus,
+    .admin-form select:focus,
+    .admin-form textarea:focus {
+      border-color: var(--white);
+    }
+    .admin-form textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    .admin-form select option {
+      background: var(--gray);
+    }
+    .admin-form-row {
+      display: flex;
+      gap: 16px;
+    }
+    .admin-form-row > * {
+      flex: 1;
+    }
+    .admin-form-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .admin-success {
+      display: none;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--white);
+      color: var(--white);
+      font-size: 0.85rem;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .admin-success.show {
+      display: block;
+    }
+    .admin-achievement-item {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 12px 16px;
+      border: 1px solid var(--gray-mid);
+      background: var(--black);
+    }
+    .admin-achievement-item input {
+      flex: 1;
+      margin-bottom: 0;
+    }
+    .admin-achievement-item .admin-btn-small {
+      white-space: nowrap;
+    }
+    @media (max-width: 768px) {
+      .admin-content {
+        padding: 16px;
+      }
+      .admin-card {
+        flex-direction: column;
+        text-align: center;
+      }
+      .admin-form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+      .admin-tabs {
+        padding: 0 8px;
+      }
+      .admin-tab {
+        padding: 12px 16px;
+        font-size: 0.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div class="admin-login" id="admin-login">
+    <div class="admin-login-box">
+      <h1>TSD <span style="font-weight:300; color:var(--gray-light);">Studio</span></h1>
+      <div class="section-label" style="margin-bottom:24px;">Admin Panel</div>
+      <input type="password" id="admin-password" placeholder="Password" autocomplete="off">
+      <button id="admin-login-btn">Login</button>
+      <div class="admin-error" id="admin-error">Wrong password</div>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div class="admin-panel" id="admin-panel">
+    <div class="admin-header">
+      <h2>TSD <span style="font-weight:300; color:var(--gray-light);">Studio</span></h2>
+      <div class="admin-header-actions">
+        <a href="index.html" target="_blank">View Site</a>
+        <button class="admin-btn-logout" id="admin-logout">Logout</button>
+      </div>
+    </div>
+
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-section="portfolio">Portfolio</button>
+      <button class="admin-tab" data-section="experience">Experience</button>
+      <button class="admin-tab" data-section="services">Services</button>
+      <button class="admin-tab" data-section="site">Site Text</button>
+    </div>
+
+    <div class="admin-content">
+      <div class="admin-success" id="admin-success">Changes saved successfully</div>
+
+      <!-- Portfolio Section -->
+      <div class="admin-section active" id="section-portfolio">
+        <div class="admin-section-header">
+          <h3>Portfolio</h3>
+          <button class="admin-btn" id="admin-add-portfolio">+ Add Project</button>
+        </div>
+        <div class="admin-form" id="admin-portfolio-form">
+          <div class="admin-form-row">
+            <div>
+              <label>Title</label>
+              <input type="text" id="pf-title" placeholder="Project title">
+            </div>
+            <div>
+              <label>Category</label>
+              <select id="pf-category">
+                <option value="cars">Cars</option>
+                <option value="suits">Suits</option>
+                <option value="helmets">Helmets</option>
+                <option value="tshirts">T-Shirts</option>
+              </select>
+            </div>
+          </div>
+          <label>Image URL</label>
+          <input type="text" id="pf-image" placeholder="assets/portfolio/image.jpg">
+          <label>Description</label>
+          <input type="text" id="pf-description" placeholder="Brief description">
+          <div class="admin-form-actions">
+            <button class="admin-btn" id="pf-save">Save</button>
+            <button class="admin-btn admin-btn-secondary" id="pf-cancel">Cancel</button>
+          </div>
+        </div>
+        <div id="admin-portfolio-list"></div>
+      </div>
+
+      <!-- Experience Section -->
+      <div class="admin-section" id="section-experience">
+        <div class="admin-section-header">
+          <h3>Experience</h3>
+          <button class="admin-btn" id="admin-add-experience">+ Add Experience</button>
+        </div>
+        <div class="admin-form" id="admin-experience-form">
+          <label>Title</label>
+          <input type="text" id="expf-title" placeholder="LMR Esports — Official Designer">
+          <label>Subtitle</label>
+          <input type="text" id="expf-subtitle" placeholder="Official designer for...">
+          <label>Description</label>
+          <textarea id="expf-desc" placeholder="Description of your experience"></textarea>
+          <hr style="border:none;border-top:1px solid var(--gray-mid);margin:24px 0;">
+          <div style="font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--gray-light);margin-bottom:16px;">Images</div>
+          <div id="exp-images"></div>
+          <button class="admin-btn admin-btn-secondary" id="exp-add-image" style="margin-top:8px;">+ Add Image</button>
+          <div class="admin-form-actions">
+            <button class="admin-btn" id="expf-save">Save</button>
+            <button class="admin-btn admin-btn-secondary" id="expf-cancel">Cancel</button>
+          </div>
+        </div>
+        <div id="admin-experience-list"></div>
+      </div>
+
+      <!-- Services Section -->
+      <div class="admin-section" id="section-services">
+        <div class="admin-section-header">
+          <h3>Services</h3>
+          <div style="display:flex;gap:8px;">
+            <button class="admin-btn admin-btn-secondary" id="admin-add-service">+ Add Service</button>
+            <button class="admin-btn" id="admin-save-services">Save Changes</button>
+          </div>
+        </div>
+        <div class="admin-form open" id="admin-services-form"></div>
+      </div>
+
+      <!-- Site Text Section -->
+      <div class="admin-section" id="section-site">
+        <div class="admin-section-header">
+          <h3>Site Text</h3>
+          <button class="admin-btn" id="admin-save-site">Save Changes</button>
+        </div>
+        <div class="admin-form open">
+          <label>Site Title</label>
+          <input type="text" id="site-title" placeholder="TSD Studio">
+          <label>Subtitle</label>
+          <input type="text" id="site-subtitle" placeholder="Thiago Simracing Designs">
+          <label>Description</label>
+          <textarea id="site-desc" placeholder="Site description"></textarea>
+          <label>Hero Tagline</label>
+          <input type="text" id="site-hero" placeholder="Precision in Every Pixel">
+          <hr style="border:none;border-top:1px solid var(--gray-mid);margin:24px 0;">
+          <div style="font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:var(--gray-light);margin-bottom:16px;">Social Links</div>
+          <label>Discord</label>
+          <input type="text" id="site-discord" placeholder="https://discord.gg/...">
+          <label>Instagram</label>
+          <input type="text" id="site-instagram" placeholder="https://instagram.com/...">
+          <label>Trading Paints</label>
+          <input type="text" id="site-tradingpaints" placeholder="https://tradingpaints.com/profile/...">
+          <label>Team Instagram</label>
+          <input type="text" id="site-team" placeholder="https://instagram.com/...">
+          <label>Donation Link (PayPal)</label>
+          <input type="text" id="site-donation" placeholder="https://paypal.me/...">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
