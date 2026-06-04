@@ -108,11 +108,14 @@ if (typeof firebase !== "undefined" && firebase.initializeApp) {
   }
 }
 
-// Lee datos desde Firestore (timeout 5s)
+// Cache en memoria para respuesta instantánea
+let cachedData = null;
+
+// Lee datos desde Firestore (timeout 2s)
 async function getFirestoreData() {
   if (!DOC_REF) return null;
   try {
-    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 5000));
+    const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 2000));
     const doc = await Promise.race([DOC_REF.get(), timeout]);
     if (doc.exists) return doc.data().data;
   } catch (e) {
@@ -121,20 +124,43 @@ async function getFirestoreData() {
   return null;
 }
 
-// Guarda datos en Firestore
+// Guarda datos en Firestore (con try/catch, nunca lanza)
 async function saveData(data) {
+  cachedData = data;
   if (!DOC_REF) return;
-  await DOC_REF.set({ data }, { merge: true });
+  try {
+    await DOC_REF.set({ data }, { merge: true });
+  } catch (e) {
+    console.error("Firestore save error:", e);
+  }
 }
 
 // --- API pública ---
 
-// Obtiene datos desde Firestore.
-// Si no hay datos en Firestore, guarda DEFAULT_DATA y los devuelve.
+// getContent: devuelve datos al instante.
+// Primero usa cache en memoria, luego intenta Firestore.
+// Si nunca se cargaron datos, devuelve DEFAULT_DATA de inmediato
+// y en background intenta obtener desde Firestore.
+let loadingFromFirestore = false;
+
 async function getContent() {
-  const remote = await getFirestoreData();
-  if (remote) return remote;
-  await saveData(DEFAULT_DATA);
+  if (cachedData) return cachedData;
+
+  // Primera vez: devolver DEFAULT_DATA inmediatamente
+  cachedData = DEFAULT_DATA;
+
+  // En background, intentar cargar desde Firestore
+  if (!loadingFromFirestore) {
+    loadingFromFirestore = true;
+    getFirestoreData().then(remote => {
+      if (remote) {
+        cachedData = remote;
+        // Disparar evento para que main.js/admin.js re-rendericen
+        document.dispatchEvent(new CustomEvent("data-refresh", { detail: remote }));
+      }
+    }).catch(() => {}).finally(() => { loadingFromFirestore = false; });
+  }
+
   return DEFAULT_DATA;
 }
 

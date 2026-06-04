@@ -33,6 +33,20 @@ async function init() {
   renderSiteInfo();
   setupPortfolioFilters();
   setupLightbox();
+  // Re-render si llegan datos frescos desde Firestore
+  document.addEventListener("data-refresh", (e) => {
+    siteData = e.detail;
+    reRenderAll();
+  });
+}
+
+function reRenderAll() {
+  renderPortfolio();
+  renderExperience();
+  renderServices();
+  loadSocialLinks();
+  renderSiteInfo();
+  initScrollReveal();
 }
 
 function initNavigation() {

@@ -84,6 +84,14 @@ async function loadAllData() {
   renderExperienceList();
   renderServicesForm();
   renderSiteForm();
+  // Re-render si llegan datos frescos desde Firestore
+  document.addEventListener("data-refresh", (e) => {
+    siteData = e.detail;
+    renderPortfolioList();
+    renderExperienceList();
+    renderServicesForm();
+    renderSiteForm();
+  });
 }
 
 /* ======= PORTFOLIO ======= */
@@ -140,10 +148,14 @@ async function savePortfolioForm() {
 
   const item = { title, category, image, description };
 
-  if (editingPortfolioId) {
-    siteData = await updatePortfolioItem(editingPortfolioId, item);
-  } else {
-    siteData = await addPortfolioItem(item);
+  try {
+    if (editingPortfolioId) {
+      siteData = await updatePortfolioItem(editingPortfolioId, item);
+    } else {
+      siteData = await addPortfolioItem(item);
+    }
+  } catch (e) {
+    console.error("Save error:", e);
   }
   renderPortfolioList();
   closePortfolioForm();
@@ -157,7 +169,11 @@ function editPortfolioItem(id) {
 
 async function deletePortfolioItem(id) {
   if (confirm("Delete this project?")) {
-    siteData = await window.deletePortfolioItem(id);
+    try {
+      siteData = await window.deletePortfolioItem(id);
+    } catch (e) {
+      console.error("Delete error:", e);
+    }
     renderPortfolioList();
     showSuccess("Project deleted");
   }
@@ -215,10 +231,14 @@ async function saveExperienceForm() {
 
   if (!title) return;
 
-  if (editingExperienceId) {
-    siteData = await updateExperienceItem(editingExperienceId, { title, subtitle, description, images });
-  } else {
-    siteData = await addExperienceItem({ title, subtitle, description, images });
+  try {
+    if (editingExperienceId) {
+      siteData = await updateExperienceItem(editingExperienceId, { title, subtitle, description, images });
+    } else {
+      siteData = await addExperienceItem({ title, subtitle, description, images });
+    }
+  } catch (e) {
+    console.error("Save error:", e);
   }
   renderExperienceList();
   closeExperienceForm();
@@ -232,7 +252,11 @@ function editExperienceItem(id) {
 
 async function deleteExperienceItem(id) {
   if (confirm("Delete this experience entry?")) {
-    siteData = await window.deleteExperienceItem(id);
+    try {
+      siteData = await window.deleteExperienceItem(id);
+    } catch (e) {
+      console.error("Delete error:", e);
+    }
     renderExperienceList();
     showSuccess("Experience deleted");
   }
@@ -345,7 +369,11 @@ async function saveServices() {
       services.push({ id, title, description, price });
     }
   });
-  siteData = await updateServices(services);
+  try {
+    siteData = await updateServices(services);
+  } catch (e) {
+    console.error("Save error:", e);
+  }
   showSuccess();
 }
 
@@ -383,7 +411,11 @@ function addServiceEntry() {
 
 async function deleteServiceEntry(id) {
   if (confirm("Delete this service?")) {
-    siteData = await window.deleteServiceItem(id);
+    try {
+      siteData = await window.deleteServiceItem(id);
+    } catch (e) {
+      console.error("Delete error:", e);
+    }
     renderServicesForm();
     showSuccess("Service deleted");
   }
@@ -426,7 +458,11 @@ async function saveSiteText() {
       donation: document.getElementById("site-donation").value.trim(),
     }
   };
-  siteData = await updateSiteInfo(site);
+  try {
+    siteData = await updateSiteInfo(site);
+  } catch (e) {
+    console.error("Save error:", e);
+  }
   showSuccess();
 }
 
